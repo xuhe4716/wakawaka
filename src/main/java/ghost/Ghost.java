@@ -339,7 +339,7 @@ public class Ghost extends Creature {
 
 
     public void frighten(){
-        //if()
+        
         debug = false;
 
         if(intersection_all >=2) {
@@ -354,9 +354,6 @@ public class Ghost extends Creature {
                 //System.out.println(String.format("random: %s",r));
 
             }
-
-
-            //setDirection(randomdirection);
 
         }else{
 
@@ -444,13 +441,13 @@ public class Ghost extends Creature {
             return;
         }
         fps++;
-        if(fps == 60) {
+        if(fps %60 == 0) {
             if(FRIGHTENED == true){
                 frightenseconds++;
             }else {
                 seconds++;
             }
-            fps =0;
+            //fps =0;
 
         }
         if(app.waka.win || app.waka.lose){
@@ -463,7 +460,7 @@ public class Ghost extends Creature {
         //scatter(this.types);
         timer(app);
 
-        System.out.println(String.format("tyeps: %s ; seconds %s; frighten seconds: %s; fps : %s; index : %s ",this.types,seconds,frightenseconds,fps, index));
+        System.out.println(String.format("tyeps: %s ; seconds %s; frighten seconds: %s; fps : %s; index : %s; turnpfps : %s ",this.types,seconds,frightenseconds,fps, index,turnfps));
         System.out.println(String.format("mode: %s; frigthenmode: %s",SCATTERCHASE,FRIGHTENED));
 
 
