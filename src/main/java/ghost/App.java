@@ -1,37 +1,56 @@
 package ghost;
-
-//import org.json.simple.JSONArray;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.event.KeyEvent;
 import processing.core.PFont;
-
-
 import java.util.*;
-
 public class App extends PApplet {
-
+    /**
+     * Pixels map 's width
+     */
     public static final int WIDTH = 448;
+    /**
+     * Pixels map 's height
+     */
     public static final int HEIGHT = 576;
+    /**
+     * A Hashmap use for storing the image of each ghost, waka and wall
+     */
     HashMap<String, PImage> sprite = new HashMap<>();
+    /**
+     * Walls represent in grid
+     */
     Wall[][] imageGridsMap = new Wall[36][28];
-
-    String filename;
-    int lives;
-    int speed;
-    int frightenedLength;
+    /**
+     * Total fruits of map
+     */
     int fruit;
-    ArrayList<Object> modeLengths = new ArrayList<>();
-
+    /**
+     * Player of the game
+     */
     Waka waka;
+    /**
+     * Ghosts of the game
+     */
     ArrayList<Ghost> ghosts = new ArrayList<>();
+    /**
+     * Imagine of game ending
+     */
     PFont end;
-    //PFont win;
+    /**
+     * Mark if the game ends or not
+     */
+    boolean gameEnd;
+    /**
+     * Mark if the game start or not
+     */
+    boolean gameStart;
 
-
+    /**
+     * Initialize the game including imagines, player, ghosts, walls, lives and fruits
+     */
     public void setup() {
         frameRate(60);
-
         sprite.put("0", null);
         sprite.put("1", this.loadImage("src/main/resources/horizontal.png")); //horizontal wall
         sprite.put("2", this.loadImage("src/main/resources/vertical.png")); //vertical wall
@@ -47,25 +66,23 @@ public class App extends PApplet {
         sprite.put("w", this.loadImage("src/main/resources/whim.png")); // ghost whim
         sprite.put("p", this.loadImage("src/main/resources/playerClosed.png")); // waka begining
         end = this.createFont("src/main/resources/PressStart2P-Regular.ttf", 25);
-        //win = this.createFont("src/main/resources/PressStart2P-Regular.ttf", 25);
         Reader r = new Reader();
         r.set(this);
     }
+
+    /**
+     * Set up the width and the height of game background
+     */
     public void settings() {
         size(WIDTH, HEIGHT);
     }
 
-    public void displayMap(){
-
-        for(int i =0;i<this.imageGridsMap.length;i++) {
-            for (int j = 0; j <this.imageGridsMap[i].length; j++) {
-                this.imageGridsMap[i][j].draw(this);
-            }
-        }
-
-
-    }
-
+    /**
+     * Receive an event from keyboard and set it to corresponding mode
+     * If event is between 37 and 40, set the event to waka's direction
+     * If event is equal to 32, mark the ghosts debug mode to true
+     * @param event : A event from keyboard
+     */
     public void keyPressed(KeyEvent event){
         int code = event.getKeyCode();
         if(code >=37 && code<=40){
@@ -74,31 +91,61 @@ public class App extends PApplet {
         if(code == 32){
             ghosts.forEach(e -> e.debug = true);
         }
-
-
     }
 
+    /**
+     * Receive an event from mouse and set the gameStart to true
+     */
+    public void mousePressed(){
+        gameStart = true;
+    }
+
+    /**
+     * Draw entrie game
+     * Return and show corresponding screen when waka loses all its lives or waka collects all fruits
+     * Restart the game in 10 seconds
+     * Show press start screen
+     */
     public void draw() {
         background(0, 0, 0);
+        if(gameEnd){
+            try {
+                Thread.sleep(10000);
+            } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                }
+            gameEnd = false;
+            gameStart = false;
+            Reader r = new Reader();
+            r.set(this);
+        }
         if(waka.lose){
             textFont(end);
             text("GAME OVER", 120, 220);
+            gameEnd = true;
             return;
-
         }else if(waka.win){
             textFont(end);
             text("YOU WIN", 140, 220);
+            gameEnd = true;
             return;
         }
-
-        displayMap();
-        this.waka.draw(this);
-        ghosts.forEach(e -> e.draw(this));
+        if(!gameStart){
+            textFont(end);
+            text("PRESS START", 100, 220);
+        }else{
+            Arrays.asList(imageGridsMap).stream().forEach(e -> Arrays.asList(e).stream().forEach(b -> b.draw(this)));
+            this.waka.draw(this);
+            ghosts.forEach(e -> e.draw(this));
+        }
 
     }
 
+    /**
+     * The main method of the entire program.
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
         PApplet.main("ghost.App");
     }
-
 }
