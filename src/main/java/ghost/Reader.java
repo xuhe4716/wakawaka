@@ -7,7 +7,6 @@ import org.json.simple.parser.ParseException;
 import processing.core.PImage;
 
 
-import java.applet.Applet;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -17,8 +16,34 @@ import java.util.*;
 
 
 public class Reader extends App{
-    
+    /**
+     * Filename of map
+     */
+    String filename;
+    /**
+     * Lives of waka
+     */
+    int lives;
+    /**
+     * Speed of waka and ghosts
+     */
+    int speed;
+    /**
+     * Frigthened length of ghosts
+     */
+    int frightenedLength;
+    /**
+     * Each mode's lengths of ghosts
+     */
+    ArrayList<Object> modeLengths = new ArrayList<>();
 
+
+    /**
+     * Read a file contains map
+     * @param filename A txt file
+     * @return Grid of map
+     * @exception FileNotFoundException When file does not exist
+     */
     public ArrayList<String> readfile(String filename) {
         if (filename == null) {
             return null;
@@ -37,7 +62,12 @@ public class Reader extends App{
         return rawfile;
     }
 
-
+    /**
+     * Read a config file and setup the basic attributes of game
+     * @param filename A config file
+     * @exception IOException
+     * @exception ParseException
+     */
     public void  readConfig(String filename){
         ArrayList<Integer> alis = new ArrayList<>();
         JSONParser parser = new JSONParser();
@@ -66,7 +96,13 @@ public class Reader extends App{
 
     }
 
-
+    /**
+     * Create new objects of waka and ghosts
+     * Count how many fruits are on the map and set up the fruits
+     * @param rawfile Grid of map
+     * @param app PApplet object for image method
+     * @exception Exception When error occurs in x row x col
+     */
     public void setGrid (ArrayList<String> rawfile, App app) {
         int row = 0;
         int col = 0;
@@ -100,16 +136,19 @@ public class Reader extends App{
         }
     }
 
-
+    /**
+     * Call all the method and pass basic attributes to main class
+     * @param app Game object for setup basic attributes
+     */
     public void set(App app){
         readConfig("config.json");
         setGrid(readfile(this.filename),app);
 
 
-        app.lives = this.lives;
-        app.speed = this.speed;
-        app.modeLengths = this.modeLengths;
-        app.frightenedLength = this.frightenedLength;
+        //app.lives = this.lives;
+        //app.speed = this.speed;
+        //app.modeLengths = this.modeLengths;
+        //app.frightenedLength = this.frightenedLength;
         app.waka = this.waka;
         app.ghosts = this.ghosts;
         app.imageGridsMap = this.imageGridsMap;
