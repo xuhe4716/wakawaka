@@ -16,38 +16,38 @@ public class App extends PApplet {
     /**
      * A Hashmap use for storing the image of each ghost, waka and wall
      */
-    HashMap<String, PImage> sprite = new HashMap<>();
+    public HashMap<String, PImage> sprite = new HashMap<>();
     /**
      * Walls represent in grid
      */
-    Wall[][] imageGridsMap = new Wall[36][28];
+    public Wall[][] imageGridsMap = new Wall[36][28];
     /**
      * Total fruits of map
      */
-    int fruit;
+    public int fruit;
     /**
      * Player of the game
      */
-    Waka waka;
+    public Waka waka;
     /**
      * Ghosts of the game
      */
-    ArrayList<Ghost> ghosts = new ArrayList<>();
+    public ArrayList<Ghost> ghosts = new ArrayList<>();
     /**
      * Imagine of game ending
      */
-    PFont end;
+    private PFont end;
     /**
      * Mark if the game ends or not
      */
-    boolean gameEnd;
+    private boolean gameEnd;
     /**
      * Mark if the game start or not
      */
-    boolean gameStart;
+    private boolean gameStart;
 
     /**
-     * Initialize the game including imagines, player, ghosts, walls, lives and fruits
+     * Initialize the game including imagines, player, ghosts, walls, lives and fruits.
      */
     public void setup() {
         frameRate(60);
@@ -78,10 +78,10 @@ public class App extends PApplet {
     }
 
     /**
-     * Receive an event from keyboard and set it to corresponding mode
-     * If event is between 37 and 40, set the event to waka's direction
-     * If event is equal to 32, mark the ghosts debug mode to true
-     * @param event : A event from keyboard
+     * Receive an event from keyboard and set it to corresponding mode.
+     * If event is between 37 and 40, set the event to waka's direction.
+     * If event is equal to 32, mark the ghosts debug mode to true.
+     * @param event A event from keyboard
      */
     public void keyPressed(KeyEvent event){
         int code = event.getKeyCode();
@@ -94,18 +94,20 @@ public class App extends PApplet {
     }
 
     /**
-     * Receive an event from mouse and set the gameStart to true
+     * Receive an event from mouse and set the gameStart to true.
      */
     public void mousePressed(){
         gameStart = true;
     }
 
     /**
-     * Draw entrie game
-     * Return and show corresponding screen when waka loses all its lives or waka collects all fruits
-     * Restart the game in 10 seconds
-     * Show press start screen
+     * Draw entire game.
+     * Return and show corresponding screen when waka loses all its lives or waka collects all fruits.
+     * Restart the game in 10 seconds.
+     * Show press start screen.
+     * @exception InterruptedException
      */
+
     public void draw() {
         background(0, 0, 0);
         if(gameEnd){
