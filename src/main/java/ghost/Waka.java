@@ -1,45 +1,63 @@
 package ghost;
 
-import processing.core.PApplet;
+
 import processing.core.PImage;
 
-import java.awt.*;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class Waka extends Creature{
-    int lives;
-    int mouthframe = 8;
-    boolean minuscout = true;
 
 
-    boolean lose;
-    boolean win;
+public class Waka extends Creature {
+    private int lives;
+    private int mouthframe = 8;
+    private boolean minuscout = true;
+
+    /**
+     * Marks if the waka loses all its lives
+     */
+    public boolean lose;
+    /**
+     * Marks if the waka collects all fruits
+     */
+    public boolean win;
 
 
-    int eatfruit;
-    boolean hit;
+    private int eatfruit;
 
-
+    /**
+     * @see Creature#Creature(int, int, int, PImage, Wall[][])
+     * @see #moveRight()
+     * @param y
+     * @param x
+     * @param speed
+     * @param lives Lives of waka which read from config
+     * @param sprite
+     * @param map
+     */
     public Waka (int y, int x, int speed, int lives,PImage sprite, Wall[][] map){
         super(y, x, speed, sprite, map);
         this.lives = lives;
+
     }
 
 
-
-
+    /**
+     * Pick up fruits and set the fruits to air.
+     * @param app App object
+     */
     public void eat(App app){
         if(map[this.x][this.y].key.equals("7")){
             map[this.x][this.y].key = "0";
-            map[this.x][this.y].nulll = true;
+            map[this.x][this.y].air = true;
             this.eatfruit ++;
         }
         pickSuperFruit(app);
     }
 
-
+    /**
+     * Set the image of waka's mouth.
+     * @param app App object
+     */
     public void mouth(App app){
         if(mouthframe == 0){
             this.sprite = app.loadImage("src/main/resources/playerClosed.png");
@@ -64,22 +82,20 @@ public class Waka extends Creature{
 
     }
 
-
+    /**
+     * When encountering ghosts, reduce life and reset people and ghosts.
+     * If the ghost is in frighten mode, set ghost.hit to true.
+     * @param app App object
+     * @return Whether meet ghosts
+     */
     public boolean meetGhost(App app) {
         ArrayList<Ghost> ghosts_ls = app.ghosts;
-        System.out.println(ghosts_ls);
         for (Ghost g : ghosts_ls) {
             if (g.x == this.x && g.y == this.y) {
                 if(g.FRIGHTENED == false){
                     this.reset();
                     this.lives--;
                     ghosts_ls.forEach(e -> e.reset());
-                    /*
-                    for (Ghost g1 : ghosts_ls) {
-                        g1.reset();
-                    }
-
-                     */
                     return true;
                 }else {
                     g.hit = true;
@@ -87,36 +103,30 @@ public class Waka extends Creature{
                 }
 
                 }
-
-
-
-
-
         }
         return false;
 
 
     }
 
-
+    /**
+     * Pick up fruits and set the fruits to air.
+     * Set ghosts' mode to frighten.
+     * @param app App object
+     */
     public void pickSuperFruit(App app){
         if(map[this.x][this.y].key.equals("8")){
             map[this.x][this.y].key = "0";
-            map[this.x][this.y].nulll = true;
+            map[this.x][this.y].air = true;
             this.eatfruit ++;
-            //this.hit = true;
             ArrayList<Ghost> ghosts_ls = app.ghosts;
             ghosts_ls.forEach(e -> e.FRIGHTENED = true);
-            /*
-            for(Ghost g: ghosts_ls){
-                g.FRIGHTENED = true;
-            }
-
-             */
         }
     }
 
-
+    /**
+     * @see Creature#reset()
+     */
     @Override
     public void reset(){
         super.reset();
@@ -124,7 +134,10 @@ public class Waka extends Creature{
         minuscout = true;
     }
 
-
+    /**
+     * Display the remaining lives of waka in the lower left corner of the map.
+     * @param app App object
+     */
     public void diplayLives(App app){
         int[][] coner = getConer(map);
         int leftBottomX = coner[2][0]+2;
@@ -136,19 +149,29 @@ public class Waka extends Creature{
 
     }
 
+    /**
+     * Check whether the waka loses all its lives
+     */
     public void isLose(){
         if(lives ==0){
             lose = true;
         }
     }
 
+    /**
+     * Check whether the waka collects all fruits
+     * @param app App object
+     */
     public void isWin(App app){
         if(app.fruit == eatfruit){
             win = true;
         }
     }
 
-
+    /**
+     * Main draw method of waka
+     * @param app App object
+     */
     @Override
     public void draw(App app){
         isWin(app);
