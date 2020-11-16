@@ -19,27 +19,27 @@ public class Reader extends App{
     /**
      * Filename of map
      */
-    String filename;
+    private String filename;
     /**
      * Lives of waka
      */
-    int lives;
+    private int lives;
     /**
      * Speed of waka and ghosts
      */
-    int speed;
+    private int speed;
     /**
      * Frigthened length of ghosts
      */
-    int frightenedLength;
+    private int frightenedLength;
     /**
      * Each mode's lengths of ghosts
      */
-    ArrayList<Object> modeLengths = new ArrayList<>();
+    private ArrayList<Object> modeLengths = new ArrayList<>();
 
 
     /**
-     * Read a file contains map
+     * Read a file contains map.
      * @param filename A txt file
      * @return Grid of map
      * @exception FileNotFoundException When file does not exist
@@ -63,7 +63,7 @@ public class Reader extends App{
     }
 
     /**
-     * Read a config file and setup the basic attributes of game
+     * Read a config file and setup the basic attributes of game.
      * @param filename A config file
      * @exception IOException
      * @exception ParseException
@@ -97,8 +97,8 @@ public class Reader extends App{
     }
 
     /**
-     * Create new objects of waka and ghosts
-     * Count how many fruits are on the map and set up the fruits
+     * Create new objects of waka and ghosts.
+     * Count how many fruits are on the map and set up the fruits.
      * @param rawfile Grid of map
      * @param app PApplet object for image method
      * @exception Exception When error occurs in x row x col
@@ -137,7 +137,7 @@ public class Reader extends App{
     }
 
     /**
-     * Call all the method and pass basic attributes to main class
+     * Call all the method and pass basic attributes to main class.
      * @param app Game object for setup basic attributes
      */
     public void set(App app){
