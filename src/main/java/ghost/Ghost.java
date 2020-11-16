@@ -1,45 +1,54 @@
 package ghost;
+import ghost.Creature;
+import ghost.Waka;
+import ghost.App;
 
-import processing.core.PApplet;
 import processing.core.PImage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Ghost extends Creature {
 
-    String types;
-    int frightenedLength;
-    ArrayList<Object> modeLengths;
+    private String types;
+    private int frightenedLength;
+    private ArrayList<Object> modeLengths;
+
+    private int targetX;
+    private int targetY;
 
 
-    //int tryy;
-    //int n = 39;
+    private int intersection_all;
+    private boolean firstMove = true;
+    private ArrayList<Integer> turn = new ArrayList<>();
 
-    //ArrayList<Integer> validturn;
-    int intersection_all;
-    boolean firstMove = true;
-    ArrayList<Integer> turn = new ArrayList<>();
-
-    boolean debug;
-    boolean FRIGHTENED;
-    boolean SCATTERCHASE;
-    boolean hit;
-    //boolean SCATTER = true;
-    //boolean CHASE = false;
-    //boolean meetWaka;
-    //boolean scatter;
-
-    int fps =0;
-    int seconds =0;
-    int frightenseconds = 0;
-    int index =0;
-    int turnfps=0;
+    /**
+     * Marks if debug mode is active
+     */
+    public boolean debug;
+    /**
+     * Marks if frighten mode is active
+     */
+    public boolean FRIGHTENED;
+    private boolean SCATTERCHASE;
+    /**
+     * Marks if ghost in frighten is hit
+     */
+    public boolean hit;
 
 
+    private int fps =0;
+    private int seconds =0;
+    private int frightenseconds = 0;
+    private int index =0;
+    private int turnfps=0;
 
 
+    /**
+     * @see Creature#Creature(int, int, int, PImage, Wall[][])
+     * @param types Types of the ghost
+     * @param frightenedLength Length of frighten mode
+     * @param modeLengths Each mode's lengths of ghosts
+     */
     public Ghost(int y, int x, int speed, PImage sprite, Wall[][] map, String types, int frightenedLength, ArrayList<Object> modeLengths) {
         super(y, x, speed,sprite, map);
         this.frightenedLength = frightenedLength;
@@ -50,7 +59,12 @@ public class Ghost extends Creature {
         //this.seconds = Integer.parseInt(modeLengths.get(0).toString());
     }
 
-
+    /**
+     *
+     * @param x Row of creature
+     * @param y Column of creature
+     * @return How many possible turn
+     */
     public int meetIntersection(int x, int y) {
         ArrayList<Integer> validturn = new ArrayList<>();
         int intersection=0;
@@ -97,15 +111,16 @@ public class Ghost extends Creature {
 
     }
 
-
-    public boolean findpath(int startx, int starty, int endx, int endy){
+    /**
+     * Findpath from current location to the end
+     * @param startx Current row of creature
+     * @param starty Current column of creature
+     * @param endx Destination row
+     * @param endy Destination column
+     */
+    public void findpath(int startx, int starty, int endx, int endy){
         targetX = endx;
         targetY = endy;
-
-
-        //if(this.x == endx && this.y == endy){
-            //return true;
-        //}
 
 
         int move1 = 0;
@@ -145,7 +160,7 @@ public class Ghost extends Creature {
                     setDirection(move1);
                 }
 
-                return false;
+                return;
             }
 
 
@@ -153,7 +168,7 @@ public class Ghost extends Creature {
                 if(direction[1] != move2){
                     setDirection(move2);
                 }
-                return false;
+                return;
             }
 
             else{
@@ -162,7 +177,7 @@ public class Ghost extends Creature {
                         if(direction[1] != a){
                             setDirection(a);
                         }
-                        return false;
+                        return;
                     }
             }
         }
@@ -170,15 +185,17 @@ public class Ghost extends Creature {
         }else{
             if(firstMove){
                 setDirection(turn.get(0));
-                return false;
+                return;
             }
 
         }
 
-        return false;
-
     }
 
+    /**
+     * Scatter mode.
+     * @param type Type of ghost
+     */
     public void scatter(String type){
         int[][] coner = getConer(map);
         if(type.equals("a")){
@@ -201,7 +218,11 @@ public class Ghost extends Creature {
         //return false;
     }
 
-
+    /**
+     * Chaser mode.
+     * @param type Type of ghost
+     * @param app App object
+     */
     public void chaser(String type, App app){
         if(type.equals("c")){
             chaserChase(app.waka);
@@ -215,52 +236,68 @@ public class Ghost extends Creature {
 
     }
 
-
+    /**
+     * Chaser mode of Chaser.
+     * @param waka Waka object
+     */
     public void chaserChase(Waka waka){
         findpath(x,y,waka.x,waka.y);
 
     }
 
+    /**
+     * Chaser mode of Ambusher.
+     * @param waka Waka object
+     */
     public void ambusherChase(Waka waka){
         int tx = 0;
         int ty = 0;
+
+
         if(waka.currentDirection == 37){
-            if(!OutOfBoundary(waka.x,waka.y -4,37)){
+            if(!OutOfBoundary(waka.x,waka.y -4)){
                 ty = waka.y - 4;
 
             }else {
-                ty = leftLowerBound;
+                ty = nearestPoint(waka.x, waka.y-4)[1];
             }
             tx = waka.x;
         }else if(waka.currentDirection == 39){
-            if(!OutOfBoundary(waka.x,waka.y +4,39)){
+            if(!OutOfBoundary(waka.x,waka.y +4)){
                 ty = waka.y + 4;
 
             }else{
-                ty = rightUpperBound;
+                ty = nearestPoint(waka.x, waka.y+4)[1];
             }
             tx = waka.x;
 
         }else if(waka.currentDirection == 40){
-            if(!OutOfBoundary(waka.x+4 ,waka.y,40)){
+            if(!OutOfBoundary(waka.x+4 ,waka.y)){
                 tx = waka.x+4;
             }else{
-                tx = bottomLowerBound;
+                tx = nearestPoint(waka.x + 4, waka.y)[0];
             }
             ty = waka.y;
 
         }else if(waka.currentDirection == 38){
-            if(!OutOfBoundary(waka.x-4 ,waka.y,38)){
+            if(!OutOfBoundary(waka.x-4 ,waka.y)){
                 tx = waka.x-4;
             }else {
-                tx = topUpeerBound;
+                tx = nearestPoint(waka.x - 4, waka.y)[0];
             }
             ty = waka.y;
 
         }
+
+
         findpath(x,y,tx,ty);
     }
 
+
+    /**
+     * Chaser mode of Ignorant.
+     * @param waka Waka object
+     */
     public void ignorantChase(Waka waka){
         double units = Math.sqrt(Math.pow(waka.x - this.x,2)+ Math.pow(waka.y - this.y,2));
         if(units > 8){
@@ -271,65 +308,41 @@ public class Ghost extends Creature {
 
     }
 
+    /**
+     * Chaser mode of Whim.
+     * @param waka Waka object
+     */
     public void whimChase(Waka waka){
-        int ty =0;
-        int tx =0;
         int aheady =waka.y;
         int aheadx =waka.x;
-        int direction =0;
         if(waka.currentDirection == 37){
-            direction = 37;
             aheady -=4;
         }else if(waka.currentDirection == 39){
-            direction = 39;
             aheady +=4;
         }else if(waka.currentDirection == 40){
-            direction = 40;
             aheadx +=4;
         }else if(waka.currentDirection == 38){
-            direction = 38;
             aheadx -=4;
         }
 
         aheadx += (aheadx - this.x) *2;
         aheady += (aheady - this.y) *2;
 
-        findpath(x,y,aheadx,aheady);
-        System.out.println(String.format("before targetx: %s; targety :%s",targetX,targetY));
-        System.out.println(String.format("direction: %s",direction));
+        //findpath(x,y,aheadx,aheady);
+        //System.out.println(String.format("before targetx: %s; targety :%s",targetX,targetY));
+        //System.out.println(String.format("direction: %s",direction));
+
+        //System.out.println(String.format("before targetx: %s; targety :%s",aheadx,aheady));
+        //System.out.println(OutOfBoundary(aheadx,aheady,direction));
 
 
-        System.out.println(OutOfBoundary(aheadx,aheady,direction));
 
+        if(OutOfBoundary(aheadx,aheady)){
+            aheadx = nearestPoint(aheadx,aheady)[0];
+            aheady = nearestPoint(aheadx,aheady)[1];
 
-
-        if(OutOfBoundary(aheadx,aheady,direction)){
-            //System.out.println(String.format("left : %s",leftLowerBound));
-            if(direction == 37){
-                aheady = leftLowerBound;
-                System.out.println(String.format("left : %s",leftLowerBound));
-            }else if(direction ==39){
-                aheady = rightUpperBound;
-            }else if(direction == 40){
-                aheadx = bottomLowerBound;
-            }else if(direction == 38){
-                aheadx = topUpeerBound;
-                System.out.println(String.format("top : %s",topUpeerBound));
-            }
 
         }
-
-
-
-
-
-        //System.out.println(OutOfBoundary(aheadx,aheady,waka.currentDirection));
-
-
-
-
-
-
 
 
         findpath(x,y,aheadx,aheady);
@@ -337,11 +350,11 @@ public class Ghost extends Creature {
 
     }
 
-
+    /**
+     * Frighten mode.
+     */
     public void frighten(){
-        
         debug = false;
-
         if(intersection_all >=2) {
             int r = 0;
             r = (int)(Math.random()*turn.size());
@@ -350,27 +363,22 @@ public class Ghost extends Creature {
             if(Math.abs(turnfps - fps)>8){
                 setDirection(randomdirection);
                 turnfps = fps;
-                //System.out.println(turn);
-                //System.out.println(String.format("random: %s",r));
 
             }
 
         }else{
-
-
             if(firstMove){
                 setDirection(turn.get(0));
             }
 
         }
-
-
-
-
     }
 
 
-
+    /**
+     * Game running timer.
+     * @param app App object
+     */
     public void timer(App app){
         //int time =0;
         if(FRIGHTENED){
@@ -379,10 +387,7 @@ public class Ghost extends Creature {
             if(frightenseconds == frightenedLength){
                 frightenseconds = 0;
                 FRIGHTENED = false;
-                //this.sprite = originalSprite;
             }
-
-
 
         }else {
             this.sprite = originalSprite;
@@ -412,12 +417,9 @@ public class Ghost extends Creature {
 
     }
 
-
-
-
-
-
-
+    /**
+     * @see Creature#reset()
+     */
     @Override
     public void reset(){
         super.reset();
@@ -427,14 +429,22 @@ public class Ghost extends Creature {
         hit = false;
     }
 
+
+    /**
+     * Check if debug mode is active
+     * @param app App object
+     */
     public void debug(App app){
-        if(this.debug == true){
+        if(this.debug){
             app.stroke(255,255,255);
             app.line(this.y *16+3,this.x*16+3,targetY*16, targetX *16);
         }
     }
 
-
+    /**
+     * Main draw method of waka
+     * @param app App object
+     */
     @Override
     public void draw(App app){
         if(hit == true){
@@ -459,9 +469,10 @@ public class Ghost extends Creature {
         //frighten();
         //scatter(this.types);
         timer(app);
+        //chaser(this.types,app);
 
-        System.out.println(String.format("tyeps: %s ; seconds %s; frighten seconds: %s; fps : %s; index : %s; turnpfps : %s ",this.types,seconds,frightenseconds,fps, index,turnfps));
-        System.out.println(String.format("mode: %s; frigthenmode: %s",SCATTERCHASE,FRIGHTENED));
+        //System.out.println(String.format("tyeps: %s ; seconds %s; frighten seconds: %s; fps : %s; index : %s; turnpfps : %s ",this.types,seconds,frightenseconds,fps, index,turnfps));
+        //System.out.println(String.format("mode: %s; frigthenmode: %s",SCATTERCHASE,FRIGHTENED));
 
 
         operation(direction);
@@ -472,6 +483,7 @@ public class Ghost extends Creature {
 
         //System.out.println(modeLengths);
         //System.out.println(String.format("now x %s; y%s",targetX,targetY));
+        //System.out.println(String.format("try : x: %s; y: %s",nearestPoint(-1, -4)[0],nearestPoint(-1, -4)[1]));
 
         debug(app);
         app.image(this.sprite, this.pixel_y - 3, this.pixel_x- 3);
